@@ -5,6 +5,7 @@ export type ScoreState = {
   teamA?: number; teamB?: number; pointsA?: number; pointsB?: number
   setsA?: number; setsB?: number; currentSet?: number; period?: string
   runs?: number; wickets?: number; balls?: number; target?: number; innings?: number
+  battingTeam?: 'a' | 'b'; innings1Runs?: number; innings1Wickets?: number; innings1Balls?: number; maxBalls?: number
   timer_started_at?: string | null; elapsed_seconds?: number; timer_status?: 'running' | 'paused'
   board?: string; result?: string; note?: string
 }
