@@ -13,7 +13,7 @@ export function Display(){
   const preferred=live.find(m=>m.featured), featured=live.length ? (preferred && rotation%live.length===0 ? preferred : live[rotation%live.length]) : undefined
   const others=live.filter(m=>m.id!==featured?.id).slice(0,3), upcoming=matches.filter(m=>m.status==='scheduled').slice(0,6), results=matches.filter(m=>m.status==='completed').sort((a,b)=>+new Date(b.updated_at)-+new Date(a.updated_at)).slice(0,5)
   return <main className="display-page">
-    <header className="display-header"><div className="display-logo"><img src="/Energy-school-meet.png" alt="Energy 2026 Inter-School Sports Meet"/></div><div className="header-center">LIVE SPORTS</div><div className="status"><time>{clock.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}</time><span className={connected?'online':'offline'}>{connected?<Radio/>:<WifiOff/>}{connected?'LIVE':'CONNECTION LOST'}</span></div></header>
+    <header className="display-header"><div className="display-logo"><img src="/Energy-school-meet-transparent.png" alt="Energy 2026 Inter-School Sports Meet"/></div><div className="header-center">LIVE SPORTS</div><div className="status"><time>{clock.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}</time><span className={connected?'online':'offline'}>{connected?<Radio/>:<WifiOff/>}{connected?'LIVE':'CONNECTION LOST'}</span></div></header>
     {demo&&<div className="demo-ribbon">PREVIEW DATA · Connect Supabase to go live</div>}
     <section className="display-grid">
       <article className="featured-panel">
