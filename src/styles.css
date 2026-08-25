@@ -39,3 +39,4 @@
 @media(prefers-reduced-motion:reduce){.score-change,.featured-content,.mini-match{animation:none!important}.ticker>div span{animation:none!important}}
 .first-innings-line{margin-top:7px;color:#fff;font-weight:700}.cricket-start{align-items:flex-start;flex-direction:column}.cricket-start>div{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}.cricket-start .alt{background:#1671a5!important}.innings-button{background:#fff3bd!important;color:#705600!important;border-color:#e7d06d!important}
 @media(max-width:700px){.cricket-start>div{grid-template-columns:1fr}.cricket-start button{width:100%}}
+.overs-field{display:flex;align-items:center;justify-content:space-between;gap:15px;width:100%;padding:12px 15px;border:1px solid #d7e3de;border-radius:9px;font-size:13px;font-weight:800;color:#344f44}.overs-field input{width:90px;height:42px;border:1px solid #bfcfc8;border-radius:7px;text-align:center;font-size:18px;font-weight:800;color:#173126}
