@@ -33,9 +33,10 @@ export function Score({ match, compact=false }: { match: Match; compact?: boolea
   }
   if (match.sport==='kabaddi') {
     const a=s.teamA||0, b=s.teamB||0
+    const remaining=Math.max(0,(s.period_duration_seconds||1200)-runningSeconds(match))
     return <div key={revision} className={`kabaddi-score score-change ${compact?'compact-score':''}`}>
       <div className="kabaddi-teams"><div><span>{match.team_a.short_name}</span><strong>{a}</strong></div><i>VS</i><div><span>{match.team_b.short_name}</span><strong>{b}</strong></div></div>
-      <div className="kabaddi-period"><span>{s.period||'FIRST HALF'}</span><b>{padClock(runningSeconds(match))}</b></div>
+      <div className="kabaddi-period"><span>{s.period||'FIRST HALF'}</span><b>{padClock(remaining)}</b></div>
     </div>
   }
   const setSport=['badminton','volleyball','table_tennis'].includes(match.sport)

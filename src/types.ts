@@ -7,6 +7,7 @@ export type ScoreState = {
   runs?: number; wickets?: number; balls?: number; target?: number; innings?: number
   battingTeam?: 'a' | 'b'; innings1Runs?: number; innings1Wickets?: number; innings1Balls?: number; maxBalls?: number
   timer_started_at?: string | null; elapsed_seconds?: number; timer_status?: 'running' | 'paused'
+  period_duration_seconds?: number
   board?: string; result?: string; note?: string
 }
 export type Match = {
