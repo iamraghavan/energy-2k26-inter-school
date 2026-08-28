@@ -1,4 +1,32 @@
 -- Complete Kabaddi half transitions and final-result handling.
+create or replace function public.ensure_kabaddi_timer_defaults() returns trigger
+language plpgsql set search_path=public as $$
+begin
+  if new.sport='kabaddi' then
+    new.score_state:=new.score_state||jsonb_build_object(
+      'period',coalesce(new.score_state->>'period','FIRST HALF'),
+      'period_duration_seconds',coalesce((new.score_state->>'period_duration_seconds')::int,1200),
+      'elapsed_seconds',coalesce((new.score_state->>'elapsed_seconds')::int,0),
+      'timer_status',coalesce(new.score_state->>'timer_status','paused')
+    );
+  end if;
+  return new;
+end$$;
+
+drop trigger if exists ensure_kabaddi_timer_defaults_trigger on public.matches;
+create trigger ensure_kabaddi_timer_defaults_trigger
+before insert or update of sport,score_state on public.matches
+for each row execute function public.ensure_kabaddi_timer_defaults();
+
+update public.matches
+set score_state=score_state||jsonb_build_object(
+  'period',coalesce(score_state->>'period','FIRST HALF'),
+  'period_duration_seconds',coalesce((score_state->>'period_duration_seconds')::int,1200),
+  'elapsed_seconds',coalesce((score_state->>'elapsed_seconds')::int,0),
+  'timer_status',coalesce(score_state->>'timer_status','paused')
+)
+where sport='kabaddi';
+
 create or replace function public.kabaddi_next_period(p_match_id uuid) returns jsonb
 language plpgsql security definer set search_path=public as $$
 declare m matches;old_state jsonb;new_state jsonb;
