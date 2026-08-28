@@ -4,7 +4,7 @@ import { useAnnouncements } from '../hooks/useAnnouncements'
 import { useMatches } from '../hooks/useMatches'
 
 export function Display() {
-  const { matches, connected, lastUpdated, demo, loading, error, refresh } = useMatches()
+  const { matches, connected, lastUpdated, demo, loading, error, refresh } = useMatches({ demoFallback: false })
   const { announcements } = useAnnouncements()
   const [clock, setClock] = useState(new Date())
   const [featuredIndex, setFeaturedIndex] = useState(0)
@@ -26,9 +26,10 @@ export function Display() {
   const results = matches.filter(match => match.status === 'completed').sort((a, b) => +new Date(b.updated_at) - +new Date(a.updated_at))
   const tickerText = announcements.filter(item => item.active).map(item => item.message).join('     ◆     ') || 'THE NEXT MATCH WILL BEGIN SHORTLY — GET READY FOR AN ACTION-PACKED BATTLE AT ENERGY 2026!'
 
-  return <main className={`led-page ${demo ? 'has-data-notice' : ''}`}>
+  const showDataNotice = demo || loading || Boolean(error)
+  return <main className={`led-page ${showDataNotice ? 'has-data-notice' : ''}`}>
     <ScoreboardHeader clock={clock} connected={connected} />
-    {demo && <DataNotice loading={loading} error={error} onRetry={refresh} />}
+    {showDataNotice && <DataNotice loading={loading} error={error} onRetry={refresh} />}
     <section className="led-board">
       <FeaturedMatch match={featured} next={upcoming[0]} />
       <LiveMatches matches={visibleLive} count={live.length} page={activePage} pages={pageCount} />

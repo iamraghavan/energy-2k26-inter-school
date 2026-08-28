@@ -8,14 +8,14 @@ type DataNoticeProps = { loading: boolean; error: string | null; onRetry: () => 
 
 export function ScoreboardHeader({ clock, connected }: HeaderProps) {
   return <header className="led-header">
-    <div className="led-brand"><div className="led-brand-plate"><img src="/Energy-school-meet-transparent.png" alt="Energy 2026 Inter-School Sports Meet" /></div></div>
-    <div className="led-title"><span>ENERGY 2026 • INTER-SCHOOL SPORTS MEET</span><strong>LIVE <i>SPORTS</i></strong></div>
+    <div className="led-brand"><div className="led-brand-plate"><img src="/Energy-school-meet.png" alt="Energy 2026 Inter-School Sports Meet" /></div></div>
+    <div className="led-title"><strong>LIVE <i>SPORTS</i></strong></div>
     <div className="led-clock"><div><small>{clock.toLocaleDateString('en-IN', { weekday: 'short', day: '2-digit', month: 'short' })}</small><time>{clock.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</time></div><b className={connected ? 'is-live' : 'is-offline'}>{connected ? <Radio /> : <WifiOff />}{connected ? 'LIVE' : 'OFFLINE'}</b></div>
   </header>
 }
 
 export function DataNotice({ loading, error, onRetry }: DataNoticeProps) {
-  return <div className="led-data-notice"><strong>{loading ? 'SYNCING' : 'DEMO FEED'}</strong><span>{error ? 'LIVE CONNECTION UNAVAILABLE • PREVIEW DATA ACTIVE' : 'PREVIEW DATA ACTIVE'}</span><button onClick={onRetry} disabled={loading}><RefreshCw className={loading ? 'is-spinning' : ''} />RETRY</button></div>
+  return <div className="led-data-notice"><strong>{loading ? 'SYNCING' : 'DATA OFFLINE'}</strong><span>{error ? 'LIVE CONNECTION UNAVAILABLE • NO SAMPLE DATA SHOWN' : 'LOADING LIVE MATCHES'}</span><button onClick={onRetry} disabled={loading}><RefreshCw className={loading ? 'is-spinning' : ''} />RETRY</button></div>
 }
 
 export function FeaturedMatch({ match, next }: { match?: Match; next?: Match }) {

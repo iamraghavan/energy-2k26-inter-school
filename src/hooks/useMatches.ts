@@ -17,12 +17,12 @@ const loadDemoMatches = (): Match[] => {
   return demoMatches
 }
 
-export function useMatches() {
-  const [matches, setMatches] = useState<Match[]>(() => isSupabaseConfigured ? demoMatches : loadDemoMatches())
+export function useMatches({ demoFallback = true }: { demoFallback?: boolean } = {}) {
+  const [matches, setMatches] = useState<Match[]>(() => isSupabaseConfigured ? [] : demoFallback ? loadDemoMatches() : [])
   const [connected, setConnected] = useState(false)
   const [lastUpdated, setLastUpdated] = useState(new Date())
   const [loading, setLoading] = useState(isSupabaseConfigured)
-  const [usingFallback, setUsingFallback] = useState(!isSupabaseConfigured)
+  const [usingFallback, setUsingFallback] = useState(!isSupabaseConfigured && demoFallback)
   const [error, setError] = useState<string | null>(null)
   const fetchMatches = useCallback(async () => {
     if (!isSupabaseConfigured) { setLoading(false); return }
@@ -42,23 +42,23 @@ export function useMatches() {
       setError(null)
       setLastUpdated(new Date())
     } catch (cause) {
-      setMatches(current => current.length ? current : demoMatches)
-      setUsingFallback(true)
+      setMatches(current => current.length ? current : demoFallback ? demoMatches : [])
+      setUsingFallback(demoFallback)
       setError(cause instanceof Error ? cause.message : 'Live data is unavailable')
     } finally {
       window.clearTimeout(timeout)
       setLoading(false)
     }
-  }, [])
+  }, [demoFallback])
   useEffect(() => {
-    if (!isSupabaseConfigured && matches.length > 0) {
+    if (!isSupabaseConfigured && demoFallback && matches.length > 0) {
       try {
         localStorage.setItem(DEMO_STORAGE_KEY, JSON.stringify(matches))
       } catch {
         // ignore storage quota errors
       }
     }
-  }, [matches])
+  }, [demoFallback, matches])
   useEffect(() => {
     fetchMatches()
     if (!isSupabaseConfigured) return
