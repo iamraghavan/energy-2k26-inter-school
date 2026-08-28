@@ -55,7 +55,7 @@ export function Display() {
     return () => context.revert()
   }, [matches])
 
-  const showDataNotice = demo || loading || Boolean(error)
+  const showDataNotice = demo || Boolean(error)
   return <main className={`led-page ${showDataNotice ? 'has-data-notice' : ''}`}>
     {showDataNotice && <DataNotice loading={loading} error={error} onRetry={refresh} />}
     <section className="led-board" ref={boardRef}>
