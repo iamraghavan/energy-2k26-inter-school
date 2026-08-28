@@ -78,6 +78,14 @@ export function Scorer() {
       setBusy(false);
       return;
     }
+    const instantActions = new Set(["score", "runs", "wicket", "wide", "no_ball"]);
+    const optimistic = instantActions.has(action.type);
+    if (optimistic) {
+      const updated = localApply(selected, action);
+      setSelected(updated);
+      setMatches((xs) => xs.map((x) => (x.id === updated.id ? updated : x)));
+      setBusy(false);
+    }
     if (selected.sport === "kabaddi" && action.type === "finish") {
       if (selected.score_state.timer_status === "running") {
         const paused = await supabase.rpc("apply_score_event", {
@@ -99,9 +107,15 @@ export function Scorer() {
     const { error } = kabaddiRpc
       ? await supabase.rpc(kabaddiRpc, { p_match_id: selected.id })
       : await supabase.rpc("apply_score_event", { p_match_id: selected.id, p_action: action });
-    if (error) setMessage(error.message);
-    else await refresh();
-    setBusy(false);
+    if (error) {
+      setMessage(error.message);
+      await refresh();
+    } else if (!optimistic) {
+      setBusy(false);
+      void refresh();
+      return;
+    }
+    if (!optimistic) setBusy(false);
   };
   const deleteMatch = async (matchId: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
