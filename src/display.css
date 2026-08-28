@@ -7,11 +7,11 @@
   --led-red:#ff1744;
   --led-green:#00ff85;
   width:100%;height:100dvh;min-width:640px;min-height:480px;overflow:hidden;
-  display:grid;grid-template-rows:clamp(92px,11vh,118px) minmax(0,1fr) clamp(54px,7vh,72px);
+  display:grid;grid-template-rows:minmax(0,1fr) clamp(54px,7vh,72px);
   color:var(--led-white);background:var(--led-black);
   font-family:Inter,Roboto,Arial,sans-serif;font-synthesis:none;
 }
-.led-page.has-data-notice{grid-template-rows:clamp(92px,11vh,118px) clamp(24px,3vh,32px) minmax(0,1fr) clamp(54px,7vh,72px)}
+.led-page.has-data-notice{grid-template-rows:clamp(24px,3vh,32px) minmax(0,1fr) clamp(54px,7vh,72px)}
 .led-page *{box-sizing:border-box}
 .led-header{position:relative;padding:0 2.2vw;display:grid;grid-template-columns:minmax(210px,1fr) minmax(300px,1.15fr) minmax(260px,1fr);align-items:stretch;border-bottom:clamp(4px,.35vw,7px) solid var(--led-yellow);background:#000}.led-header:after{content:"";position:absolute;left:2.2vw;right:2.2vw;bottom:-1px;height:1px;background:var(--led-yellow)}
 .led-brand{min-width:0;display:flex;align-items:center}.led-brand-plate{width:min(25vw,390px);height:88%;display:flex;align-items:center;padding:3px 8px;background:#fff;border-left:clamp(7px,.55vw,11px) solid var(--led-yellow)}.led-brand img{display:block;width:100%;height:100%;object-fit:contain;object-position:left center}
@@ -37,6 +37,6 @@
 @keyframes led-marquee{to{transform:translateX(-100%)}}@keyframes led-cut-in{from{opacity:.25;transform:translateX(10px)}to{opacity:1;transform:none}}@keyframes led-slide-in{from{opacity:.2;transform:translateX(14px)}to{opacity:1;transform:none}}@keyframes led-score-pop{0%{transform:scale(1)}50%{transform:scale(1.06)}100%{transform:scale(1)}}
 
 @media(min-aspect-ratio:2/1){.led-board{grid-template-columns:minmax(0,1.45fr) minmax(430px,1fr);grid-template-rows:minmax(0,1fr) clamp(120px,17vh,168px)}.led-featured-content{padding-left:3vw;padding-right:3vw}.led-live-list{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:minmax(0,1fr)}.led-card-meta{align-items:flex-start;flex-direction:column;gap:4px}.led-live-card .compact.versus{gap:7px!important}.led-live-card .compact.versus span{font-size:clamp(18px,1.35vw,28px)!important}}
-@media(max-height:650px) and (min-width:761px){.led-page{grid-template-rows:64px minmax(0,1fr) 48px}.led-page.has-data-notice{grid-template-rows:64px 26px minmax(0,1fr) 48px}.led-board{padding-top:8px;padding-bottom:8px;grid-template-rows:minmax(0,1fr) 128px}.led-section-title{height:43px}.led-live-list{height:calc(100% - 43px)}.led-up-next .led-section-title,.led-results .led-section-title{height:38px}.led-next-content,.led-result-list{height:calc(100% - 38px)}.led-featured-content{padding-top:11px;padding-bottom:11px}.led-sport h1{font-size:clamp(34px,4vw,64px)}.led-featured .versus strong{font-size:clamp(72px,8vw,125px)!important}.led-featured .period{font-size:clamp(17px,1.5vw,26px)!important}}
+@media(max-height:650px) and (min-width:761px){.led-page{grid-template-rows:minmax(0,1fr) 48px}.led-page.has-data-notice{grid-template-rows:26px minmax(0,1fr) 48px}.led-board{padding-top:8px;padding-bottom:8px;grid-template-rows:minmax(0,1fr) 128px}.led-section-title{height:43px}.led-live-list{height:calc(100% - 43px)}.led-up-next .led-section-title,.led-results .led-section-title{height:38px}.led-next-content,.led-result-list{height:calc(100% - 38px)}.led-featured-content{padding-top:11px;padding-bottom:11px}.led-sport h1{font-size:clamp(34px,4vw,64px)}.led-featured .versus strong{font-size:clamp(72px,8vw,125px)!important}.led-featured .period{font-size:clamp(17px,1.5vw,26px)!important}}
 @media(max-width:900px){.led-header{grid-template-columns:minmax(130px,1fr) auto minmax(180px,1fr)}.led-title span{display:none}.led-board{grid-template-columns:minmax(0,1.5fr) minmax(310px,.9fr)}.led-clock{gap:12px}.led-clock b{min-width:76px}.led-card-meta span{font-size:11px}}
 @media(prefers-reduced-motion:reduce){.led-featured-content,.led-live-list,.led-ticker>div span,.led-page .score-change,.led-page .score-change:after,.led-page .score-change *{animation:none!important}}

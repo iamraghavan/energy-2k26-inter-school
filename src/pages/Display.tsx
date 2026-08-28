@@ -1,16 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
-import { DataNotice, FeaturedMatch, LatestResults, LiveMatches, NewsTicker, ScoreboardHeader, UpcomingMatch } from '../components/LiveSportsDashboard'
+import { DataNotice, FeaturedMatch, LatestResults, LiveMatches, NewsTicker, UpcomingMatch } from '../components/LiveSportsDashboard'
 import { useAnnouncements } from '../hooks/useAnnouncements'
 import { useMatches } from '../hooks/useMatches'
 
 export function Display() {
   const { matches, connected, lastUpdated, demo, loading, error, refresh } = useMatches({ demoFallback: false })
   const { announcements } = useAnnouncements()
-  const [clock, setClock] = useState(new Date())
   const [featuredIndex, setFeaturedIndex] = useState(0)
   const [livePage, setLivePage] = useState(0)
 
-  useEffect(() => { const id = window.setInterval(() => setClock(new Date()), 1000); return () => window.clearInterval(id) }, [])
   useEffect(() => { const id = window.setInterval(() => setFeaturedIndex(value => value + 1), 12000); return () => window.clearInterval(id) }, [])
   useEffect(() => { const id = window.setInterval(() => setLivePage(value => value + 1), 8000); return () => window.clearInterval(id) }, [])
 
@@ -28,7 +26,6 @@ export function Display() {
 
   const showDataNotice = demo || loading || Boolean(error)
   return <main className={`led-page ${showDataNotice ? 'has-data-notice' : ''}`}>
-    <ScoreboardHeader clock={clock} connected={connected} />
     {showDataNotice && <DataNotice loading={loading} error={error} onRetry={refresh} />}
     <section className="led-board">
       <FeaturedMatch match={featured} next={upcoming[0]} />
