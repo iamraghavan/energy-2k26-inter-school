@@ -5,6 +5,8 @@ import { DisplayAudio } from '../components/DisplayAudio'
 import { useAnnouncements } from '../hooks/useAnnouncements'
 import { useMatches } from '../hooks/useMatches'
 
+const hiddenDisplayMatches = new Set(['5b9cd760-7131-46bf-98cc-5c3788fb1001'])
+
 export function Display() {
   const { matches, connected, lastUpdated, demo, loading, error, refresh } = useMatches({ demoFallback: false })
   const { announcements } = useAnnouncements()
@@ -21,7 +23,8 @@ export function Display() {
     return () => window.clearInterval(id)
   }, [])
 
-  const live = useMemo(() => matches.filter(match => match.status === 'live' || match.status === 'paused'), [matches])
+  const displayMatches = useMemo(() => matches.filter(match => !hiddenDisplayMatches.has(match.id)), [matches])
+  const live = useMemo(() => displayMatches.filter(match => match.status === 'live' || match.status === 'paused'), [displayMatches])
   const preferred = live.find(match => match.featured)
   const featured = live.length ? (preferred && featuredIndex % live.length === 0 ? preferred : live[featuredIndex % live.length]) : undefined
   const secondary = live.filter(match => match.id !== featured?.id)
@@ -29,8 +32,8 @@ export function Display() {
   const pageCount = Math.max(1, Math.ceil(secondary.length / pageSize))
   const activePage = livePage % pageCount
   const visibleLive = secondary.slice(activePage * pageSize, (activePage + 1) * pageSize)
-  const upcoming = matches.filter(match => match.status === 'scheduled').sort((a, b) => +new Date(a.scheduled_at) - +new Date(b.scheduled_at))
-  const results = matches.filter(match => match.status === 'completed').sort((a, b) => +new Date(b.updated_at) - +new Date(a.updated_at))
+  const upcoming = displayMatches.filter(match => match.status === 'scheduled').sort((a, b) => +new Date(a.scheduled_at) - +new Date(b.scheduled_at))
+  const results = displayMatches.filter(match => match.status === 'completed').sort((a, b) => +new Date(b.updated_at) - +new Date(a.updated_at))
   const tickerText = announcements.filter(item => item.active).map(item => item.message).join('     ◆     ') || 'THE NEXT MATCH WILL BEGIN SHORTLY — GET READY FOR AN ACTION-PACKED BATTLE AT ENERGY 2026!'
 
   useLayoutEffect(() => {
