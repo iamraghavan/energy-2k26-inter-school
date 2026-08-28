@@ -66,3 +66,6 @@ end$$;
 
 grant execute on function public.kabaddi_next_period(uuid) to authenticated;
 grant execute on function public.finish_kabaddi_match(uuid) to authenticated;
+
+-- Make newly created RPC functions immediately visible through PostgREST.
+notify pgrst, 'reload schema';
