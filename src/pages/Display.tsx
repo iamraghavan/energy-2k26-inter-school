@@ -11,6 +11,10 @@ export function Display() {
 
   useEffect(() => { const id = window.setInterval(() => setFeaturedIndex(value => value + 1), 12000); return () => window.clearInterval(id) }, [])
   useEffect(() => { const id = window.setInterval(() => setLivePage(value => value + 1), 8000); return () => window.clearInterval(id) }, [])
+  useEffect(() => {
+    const id = window.setInterval(() => window.location.reload(), 5 * 60 * 1000)
+    return () => window.clearInterval(id)
+  }, [])
 
   const live = useMemo(() => matches.filter(match => match.status === 'live' || match.status === 'paused'), [matches])
   const preferred = live.find(match => match.featured)
