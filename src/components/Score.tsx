@@ -31,6 +31,13 @@ export function Score({ match, compact=false }: { match: Match; compact?: boolea
     }
     return <div key={revision} className="chess-score score-change"><strong>{s.result || 'In progress'}</strong><span>{s.board || 'Board 1'}</span></div>
   }
+  if (match.sport==='kabaddi') {
+    const a=s.teamA||0, b=s.teamB||0
+    return <div key={revision} className={`kabaddi-score score-change ${compact?'compact-score':''}`}>
+      <div className="kabaddi-teams"><div><span>{match.team_a.short_name}</span><strong>{a}</strong></div><i>VS</i><div><span>{match.team_b.short_name}</span><strong>{b}</strong></div></div>
+      <div className="kabaddi-period"><span>{s.period||'FIRST HALF'}</span><b>{padClock(runningSeconds(match))}</b></div>
+    </div>
+  }
   const setSport=['badminton','volleyball','table_tennis'].includes(match.sport)
   const a=setSport ? s.pointsA||0 : s.teamA||0, b=setSport ? s.pointsB||0 : s.teamB||0
   return <div key={revision} className="score-change">

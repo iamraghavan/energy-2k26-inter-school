@@ -4,7 +4,7 @@ import { isSupabaseConfigured, supabase } from '../lib/supabase'
 import type { Sport, Team } from '../types'
 import { sportName } from '../utils'
 
-const sports:Sport[]=['football','badminton','volleyball','basketball','cricket','table_tennis','chess']
+const sports:Sport[]=['football','badminton','volleyball','basketball','cricket','kabaddi','table_tennis','chess']
 const initial={sport:'football' as Sport,gender:'men',teamA:'',teamB:'',scheduledAt:new Date(Date.now()+15*60000).toISOString().slice(0,16),venue:'Main Ground'}
 export function QuickSchedule({teams,onCreated,compact=false}:{teams:Team[];onCreated?:()=>void;compact?:boolean}){
  const[open,setOpen]=useState(!compact),[form,setForm]=useState(initial),[busy,setBusy]=useState(false),[notice,setNotice]=useState('')

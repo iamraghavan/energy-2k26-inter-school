@@ -22,11 +22,33 @@ export function useMatches() {
   const [connected, setConnected] = useState(false)
   const [lastUpdated, setLastUpdated] = useState(new Date())
   const [loading, setLoading] = useState(isSupabaseConfigured)
+  const [usingFallback, setUsingFallback] = useState(!isSupabaseConfigured)
+  const [error, setError] = useState<string | null>(null)
   const fetchMatches = useCallback(async () => {
-    if (!isSupabaseConfigured) return
-    const { data, error } = await supabase.from('matches_view').select('*').order('scheduled_at')
-    if (!error && data) { setMatches(data.map(hydrate)); setLastUpdated(new Date()) }
-    setLoading(false)
+    if (!isSupabaseConfigured) { setLoading(false); return }
+    setLoading(true)
+    const controller = new AbortController()
+    const timeout = window.setTimeout(() => controller.abort(), 8000)
+    try {
+      const { data, error: fetchError } = await supabase
+        .from('matches_view')
+        .select('*')
+        .order('scheduled_at')
+        .abortSignal(controller.signal)
+      if (fetchError) throw fetchError
+      if (!data?.length) throw new Error('No match data is available yet')
+      setMatches(data.map(hydrate))
+      setUsingFallback(false)
+      setError(null)
+      setLastUpdated(new Date())
+    } catch (cause) {
+      setMatches(current => current.length ? current : demoMatches)
+      setUsingFallback(true)
+      setError(cause instanceof Error ? cause.message : 'Live data is unavailable')
+    } finally {
+      window.clearTimeout(timeout)
+      setLoading(false)
+    }
   }, [])
   useEffect(() => {
     if (!isSupabaseConfigured && matches.length > 0) {
@@ -51,5 +73,5 @@ export function useMatches() {
     window.addEventListener('online', onOnline)
     return () => { window.removeEventListener('online', onOnline); supabase.removeChannel(channel) }
   }, [fetchMatches])
-  return { matches, setMatches, connected: isSupabaseConfigured ? connected : true, lastUpdated, loading, demo: !isSupabaseConfigured, refresh: fetchMatches }
+  return { matches, setMatches, connected: isSupabaseConfigured ? connected && !usingFallback : true, lastUpdated, loading, demo: usingFallback, error, refresh: fetchMatches }
 }

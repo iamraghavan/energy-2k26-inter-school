@@ -1,4 +1,4 @@
-export type Sport = 'football' | 'badminton' | 'volleyball' | 'basketball' | 'cricket' | 'table_tennis' | 'chess'
+export type Sport = 'football' | 'badminton' | 'volleyball' | 'basketball' | 'cricket' | 'kabaddi' | 'table_tennis' | 'chess'
 export type MatchStatus = 'scheduled' | 'live' | 'paused' | 'completed' | 'cancelled'
 export type Team = { id: string; name: string; short_name: string; color: string }
 export type ScoreState = {

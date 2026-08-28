@@ -1,5 +1,5 @@
 import type { Match, Sport } from './types'
-export const sportName = (s: Sport) => ({ football:'Football', badminton:'Badminton', volleyball:'Volleyball', basketball:'Basketball', cricket:'Cricket', table_tennis:'Table Tennis', chess:'Chess' }[s])
+export const sportName = (s: Sport) => ({ football:'Football', badminton:'Badminton', volleyball:'Volleyball', basketball:'Basketball', cricket:'Cricket', kabaddi:'Kabaddi', table_tennis:'Table Tennis', chess:'Chess' }[s])
 export const genderLabel = (g: Match['gender']) => g === 'men' ? 'M' : g === 'women' ? 'W' : 'Mixed'
 export const formatTime = (iso: string) => new Intl.DateTimeFormat('en-IN',{hour:'2-digit',minute:'2-digit'}).format(new Date(iso))
 export const padClock = (seconds = 0) => `${Math.floor(seconds/60).toString().padStart(2,'0')}:${Math.floor(seconds%60).toString().padStart(2,'0')}`

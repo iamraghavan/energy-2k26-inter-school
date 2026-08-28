@@ -1,30 +1,40 @@
 import { useEffect, useMemo, useState } from 'react'
-import { AlertTriangle, CalendarClock, MapPin, Radio, Trophy, WifiOff } from 'lucide-react'
-import { Score } from '../components/Score'
+import { DataNotice, FeaturedMatch, LatestResults, LiveMatches, NewsTicker, ScoreboardHeader, UpcomingMatch } from '../components/LiveSportsDashboard'
 import { useAnnouncements } from '../hooks/useAnnouncements'
 import { useMatches } from '../hooks/useMatches'
-import { formatTime, genderLabel, sportName } from '../utils'
 
-export function Display(){
-  const {matches,connected,lastUpdated,demo}=useMatches(), {announcements}=useAnnouncements(), [clock,setClock]=useState(new Date()), [rotation,setRotation]=useState(0), [slide,setSlide]=useState(0), [viewport,setViewport]=useState({width:window.innerWidth,ratio:window.innerWidth/window.innerHeight})
-  useEffect(()=>{const id=setInterval(()=>setClock(new Date()),1000);return()=>clearInterval(id)},[])
-  const live=useMemo(()=>matches.filter(m=>m.status==='live'||m.status==='paused'),[matches])
-  useEffect(()=>{const id=setInterval(()=>setRotation(x=>x+1),12000);return()=>clearInterval(id)},[])
-  useEffect(()=>{const id=setInterval(()=>setSlide(x=>x+1),8000);return()=>clearInterval(id)},[])
-  useEffect(()=>{const resize=()=>setViewport({width:window.innerWidth,ratio:window.innerWidth/window.innerHeight});window.addEventListener('resize',resize);return()=>window.removeEventListener('resize',resize)},[])
-  const preferred=live.find(m=>m.featured), featured=live.length ? (preferred && rotation%live.length===0 ? preferred : live[rotation%live.length]) : undefined
-  const secondaryCapacity=viewport.width<=760?3:viewport.ratio>=1.46?(live.length>4?5:3):4, secondary=live.filter(m=>m.id!==featured?.id), slideCount=Math.max(1,Math.ceil(secondary.length/secondaryCapacity)), activeSlide=slide%slideCount, others=secondary.slice(activeSlide*secondaryCapacity,(activeSlide+1)*secondaryCapacity), upcoming=matches.filter(m=>m.status==='scheduled').slice(0,6), results=matches.filter(m=>m.status==='completed').sort((a,b)=>+new Date(b.updated_at)-+new Date(a.updated_at)).slice(0,5)
-  return <main className="display-page">
-    <header className="display-header"><div className="display-logo"><img src="/Energy-school-meet-transparent.png" alt="Energy 2026 Inter-School Sports Meet"/></div><div className="header-center">LIVE SPORTS</div><div className="status"><time>{clock.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}</time><span className={connected?'online':'offline'}>{connected?<Radio/>:<WifiOff/>}{connected?'LIVE':'CONNECTION LOST'}</span></div></header>
-    {demo&&<div className="demo-ribbon">PREVIEW DATA · Connect Supabase to go live</div>}
-    <section className={`display-grid ${live.length>4?'many-live':''}`}>
-      <article className="featured-panel">
-        {featured ? <div key={featured.id} className="featured-content"><div className="eyebrow"><span>FEATURED MATCH</span><span className="live-pill"><i/>LIVE</span></div><div className="featured-title"><span>{sportName(featured.sport)}</span><small>{featured.gender.toUpperCase()} · {featured.venue}</small></div><Score match={featured}/></div> : <div className="empty-state standby-state"><div className="eyebrow"><span>LIVE DISPLAY</span><span className="standby-badge">STANDBY</span></div><CalendarClock className="standby-icon"/><h2>NEXT MATCH UPCOMING</h2>{upcoming[0]?<div className="standby-card"><div className="standby-sport">{sportName(upcoming[0].sport)} · {genderLabel(upcoming[0].gender)}</div><div className="standby-vs"><span>{upcoming[0].team_a.name}</span><i>VS</i><span>{upcoming[0].team_b.name}</span></div><div className="standby-meta"><MapPin size={14}/> {upcoming[0].venue} · {formatTime(upcoming[0].scheduled_at)}</div></div>:<p className="quiet">The next fixture will appear here automatically.</p>}</div>}
-      </article>
-      <aside className={`live-panel live-count-${live.length} ${slideCount>1?'is-rotating':''}`}><div className="section-heading"><span><i/>LIVE NOW</span><b>{live.length} LIVE {slideCount>1?`· SLIDE ${activeSlide+1}/${slideCount}`:''}</b></div><div className="live-list" key={`${featured?.id}-${activeSlide}`}>{others.length?others.map((m,index)=><div className="mini-match" key={m.id}><div className="mini-card-number">{String(activeSlide*secondaryCapacity+index+2).padStart(2,'0')}</div><div className="mini-meta"><b>{sportName(m.sport)} <em>{genderLabel(m.gender)}</em></b><span><MapPin/> {m.venue}</span></div><Score match={m} compact/></div>):<p className="quiet">Other live matches will appear here.</p>}</div></aside>
-      <section className="upcoming-panel"><div className="section-heading"><span><CalendarClock/>UPCOMING</span><b>NEXT FIXTURES</b></div><div className="fixture-row">{upcoming.length?upcoming.map(m=><div className="fixture" key={m.id}><time>{formatTime(m.scheduled_at)}</time><div><b>{sportName(m.sport)} <em>{genderLabel(m.gender)}</em></b><span>{m.team_a.short_name} <i>vs</i> {m.team_b.short_name}</span></div><small>{m.venue}</small></div>):<p className="quiet">No upcoming fixtures.</p>}</div></section>
-      <section className="results-panel"><div className="section-heading"><span><Trophy/>LATEST RESULTS</span></div><div className="result-list">{results.length?results.map(m=><div key={m.id}><b>{sportName(m.sport)} <em>{genderLabel(m.gender)}</em></b><span>{m.result_summary||m.score_state.result||`${m.team_a.short_name} vs ${m.team_b.short_name}`}</span></div>):<p className="quiet">Results will appear here.</p>}</div></section>
+export function Display() {
+  const { matches, connected, lastUpdated, demo, loading, error, refresh } = useMatches()
+  const { announcements } = useAnnouncements()
+  const [clock, setClock] = useState(new Date())
+  const [featuredIndex, setFeaturedIndex] = useState(0)
+  const [livePage, setLivePage] = useState(0)
+
+  useEffect(() => { const id = window.setInterval(() => setClock(new Date()), 1000); return () => window.clearInterval(id) }, [])
+  useEffect(() => { const id = window.setInterval(() => setFeaturedIndex(value => value + 1), 12000); return () => window.clearInterval(id) }, [])
+  useEffect(() => { const id = window.setInterval(() => setLivePage(value => value + 1), 8000); return () => window.clearInterval(id) }, [])
+
+  const live = useMemo(() => matches.filter(match => match.status === 'live' || match.status === 'paused'), [matches])
+  const preferred = live.find(match => match.featured)
+  const featured = live.length ? (preferred && featuredIndex % live.length === 0 ? preferred : live[featuredIndex % live.length]) : undefined
+  const secondary = live.filter(match => match.id !== featured?.id)
+  const pageSize = 2
+  const pageCount = Math.max(1, Math.ceil(secondary.length / pageSize))
+  const activePage = livePage % pageCount
+  const visibleLive = secondary.slice(activePage * pageSize, (activePage + 1) * pageSize)
+  const upcoming = matches.filter(match => match.status === 'scheduled').sort((a, b) => +new Date(a.scheduled_at) - +new Date(b.scheduled_at))
+  const results = matches.filter(match => match.status === 'completed').sort((a, b) => +new Date(b.updated_at) - +new Date(a.updated_at))
+  const tickerText = announcements.filter(item => item.active).map(item => item.message).join('     ◆     ') || 'THE NEXT MATCH WILL BEGIN SHORTLY — GET READY FOR AN ACTION-PACKED BATTLE AT ENERGY 2026!'
+
+  return <main className={`led-page ${demo ? 'has-data-notice' : ''}`}>
+    <ScoreboardHeader clock={clock} connected={connected} />
+    {demo && <DataNotice loading={loading} error={error} onRetry={refresh} />}
+    <section className="led-board">
+      <FeaturedMatch match={featured} next={upcoming[0]} />
+      <LiveMatches matches={visibleLive} count={live.length} page={activePage} pages={pageCount} />
+      <UpcomingMatch match={upcoming[0]} />
+      <LatestResults matches={results} />
     </section>
-    <footer className="ticker"><strong>EGS UPDATE</strong><div><span>{announcements.filter(a=>a.active).map(a=>a.message).join('     ◆     ')||'WELCOME TO ENERGY 2026 INTER-SCHOOL SPORTS MEET'}</span></div>{!connected&&<small><AlertTriangle/> Last updated {lastUpdated.toLocaleTimeString()}</small>}</footer>
+    <NewsTicker text={tickerText} connected={connected} demo={demo} lastUpdated={lastUpdated} />
   </main>
 }
