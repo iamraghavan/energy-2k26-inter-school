@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { DataNotice, FeaturedMatch, LatestResults, LiveMatches, NewsTicker, UpcomingMatch } from '../components/LiveSportsDashboard'
+import { DisplayAudio } from '../components/DisplayAudio'
 import { useAnnouncements } from '../hooks/useAnnouncements'
 import { useMatches } from '../hooks/useMatches'
 
@@ -38,5 +39,6 @@ export function Display() {
       <LatestResults matches={results} />
     </section>
     <NewsTicker text={tickerText} connected={connected} demo={demo} lastUpdated={lastUpdated} />
+    <DisplayAudio matches={matches} />
   </main>
 }
