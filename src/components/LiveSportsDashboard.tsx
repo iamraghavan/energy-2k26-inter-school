@@ -1,4 +1,5 @@
 import { AlertTriangle, CalendarClock, MapPin, Radio, RefreshCw, Trophy, WifiOff } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
 import type { Match } from '../types'
 import { formatTime, genderLabel, sportName } from '../utils'
 import { Score } from './Score'
@@ -20,25 +21,25 @@ export function DataNotice({ loading, error, onRetry }: DataNoticeProps) {
 
 export function FeaturedMatch({ match, next }: { match?: Match; next?: Match }) {
   return <article className="led-featured">
-    {match ? <div key={match.id} className="led-featured-content">
+    <AnimatePresence mode="wait">{match ? <motion.div key={match.id} data-match-id={match.id} className="led-featured-content" initial={{opacity:0,x:-32,filter:'blur(8px)'}} animate={{opacity:1,x:0,filter:'blur(0px)'}} exit={{opacity:0,x:32,filter:'blur(8px)'}} transition={{duration:.42,ease:[.22,1,.36,1]}}>
       <div className="led-featured-top"><span>FEATURED MATCH</span><b><i />LIVE</b></div>
       <div className="led-sport"><h1>{sportName(match.sport)}</h1><p>{genderLabel(match.gender)} <i>•</i> {match.venue}</p></div>
       <Score match={match} />
-    </div> : <div className="led-standby"><CalendarClock /><span>STANDBY</span><h2>NEXT MATCH</h2>{next ? <><strong>{sportName(next.sport)}</strong><p>{next.team_a.short_name} <i>VS</i> {next.team_b.short_name}</p><b>{formatTime(next.scheduled_at)} • {next.venue}</b></> : <p>FIXTURES WILL APPEAR HERE</p>}</div>}
+    </motion.div> : <motion.div key="standby" className="led-standby" initial={{opacity:0,scale:.96}} animate={{opacity:1,scale:1}} exit={{opacity:0,scale:1.04}}><CalendarClock /><span>STANDBY</span><h2>NEXT MATCH</h2>{next ? <><strong>{sportName(next.sport)}</strong><p>{next.team_a.short_name} <i>VS</i> {next.team_b.short_name}</p><b>{formatTime(next.scheduled_at)} • {next.venue}</b></> : <p>FIXTURES WILL APPEAR HERE</p>}</motion.div>}</AnimatePresence>
   </article>
 }
 
 export function LiveMatchCard({ match }: { match: Match }) {
-  return <article className={`led-live-card sport-${match.sport}`}>
+  return <motion.article layout data-match-id={match.id} className={`led-live-card sport-${match.sport}`} initial={{opacity:0,x:28,scale:.97}} animate={{opacity:1,x:0,scale:1}} exit={{opacity:0,x:-28,scale:.97}} transition={{duration:.38,ease:[.22,1,.36,1]}}>
     <div className="led-card-meta"><strong>{sportName(match.sport)} <em>• {genderLabel(match.gender)}</em></strong><span><MapPin />{match.venue}</span></div>
     <Score match={match} compact />
-  </article>
+  </motion.article>
 }
 
 export function LiveMatches({ matches, count, page, pages }: { matches: Match[]; count: number; page: number; pages: number }) {
   return <aside className="led-live-panel">
     <div className="led-section-title"><h2><i />LIVE NOW</h2><span>{count} MATCHES{pages > 1 ? ` • ${page + 1}/${pages}` : ''}</span></div>
-    <div className="led-live-list" key={page}>{matches.length ? matches.map(match => <LiveMatchCard key={match.id} match={match} />) : <div className="led-no-secondary">FEATURED MATCH IS LIVE</div>}</div>
+    <AnimatePresence mode="popLayout"><motion.div className="led-live-list" key={page} initial={{opacity:0,x:30}} animate={{opacity:1,x:0}} exit={{opacity:0,x:-30}} transition={{duration:.35}}>{matches.length ? matches.map(match => <LiveMatchCard key={match.id} match={match} />) : <div className="led-no-secondary">FEATURED MATCH IS LIVE</div>}</motion.div></AnimatePresence>
   </aside>
 }
 
