@@ -78,11 +78,24 @@ export function Scorer() {
       setBusy(false);
       return;
     }
-    const kabaddiRpc = selected.sport === "kabaddi" && action.type === "next_period"
-      ? "kabaddi_next_period"
-      : selected.sport === "kabaddi" && action.type === "finish"
-        ? "finish_kabaddi_match"
-        : null;
+    if (selected.sport === "kabaddi" && action.type === "finish") {
+      if (selected.score_state.timer_status === "running") {
+        const paused = await supabase.rpc("apply_score_event", {
+          p_match_id: selected.id,
+          p_action: { type: "pause_timer" },
+        });
+        if (paused.error) { setMessage(paused.error.message); setBusy(false); return; }
+      }
+      const scoreA = selected.score_state.teamA || 0;
+      const scoreB = selected.score_state.teamB || 0;
+      const winnerId = scoreA === scoreB ? null : scoreA > scoreB ? selected.team_a.id : selected.team_b.id;
+      const summary = scoreA === scoreB
+        ? "Match tied"
+        : `${scoreA > scoreB ? selected.team_a.short_name : selected.team_b.short_name} won by ${Math.abs(scoreA - scoreB)} points`;
+      const saved = await supabase.from("matches").update({ winner_id: winnerId, result_summary: summary }).eq("id", selected.id);
+      if (saved.error) { setMessage(saved.error.message); setBusy(false); return; }
+    }
+    const kabaddiRpc = selected.sport === "kabaddi" && action.type === "next_period" ? "kabaddi_next_period" : null;
     const { error } = kabaddiRpc
       ? await supabase.rpc(kabaddiRpc, { p_match_id: selected.id })
       : await supabase.rpc("apply_score_event", { p_match_id: selected.id, p_action: action });
